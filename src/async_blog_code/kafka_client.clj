@@ -18,8 +18,9 @@
   (ex-info "An invalid offset has been specified!"
            {:offset offset}))
 
-(defn kafka-exception []
-  (ex-info "Session has timed out." {}))
+(defn kafka-exception [offset]
+  (ex-info "Session has timed out."
+           {:offset offset}))
 
 (defprotocol LogConsumer
   (take! [this offset]))
@@ -32,7 +33,7 @@
     [events]
   LogConsumer
   (take! [this offset]
-    (if (= 0 (rand-int 1000)) (throw (kafka-exception))
+    (if (= 0 (rand-int 1000)) (throw (kafka-exception offset))
         (try (nth events offset)
              (catch Exception e
                (throw (invalid-offset-exception offset)))))))
